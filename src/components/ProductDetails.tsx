@@ -6,7 +6,6 @@ import {
   Minus, 
   Star, 
   Heart, 
-  Share2, 
   ShoppingBag,
   Check,
   AlertTriangle,
@@ -18,6 +17,9 @@ import { Product } from '../types';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '../utils/whatsapp';
 import { supabase } from '../lib/supabase';
+import LazyImage from './LazyImage';
+import ShareButton from './ShareButton';
+import SimilarProducts from './SimilarProducts';
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -28,7 +30,7 @@ const ProductDetails: React.FC = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [isWishlisted, setIsWishlisted] = useState(false);
-
+  
   useEffect(() => {
     if (id) {
       fetchProduct(id);
@@ -66,23 +68,6 @@ const ProductDetails: React.FC = () => {
     setTimeout(() => {
       openCart();
     }, 300);
-  };
-
-  const handleShare = async () => {
-    if (navigator.share && product) {
-      try {
-        await navigator.share({
-          title: product.name,
-          text: product.description,
-          url: window.location.href,
-        });
-      } catch (error) {
-        // Fallback to copying URL
-        navigator.clipboard.writeText(window.location.href);
-      }
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-    }
   };
 
   const getCategoryColor = (category: string) => {
@@ -203,11 +188,14 @@ const ProductDetails: React.FC = () => {
               <Heart className={`h-5 w-5 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
             </button>
             <button
-              onClick={handleShare}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-            >
-              <Share2 className="h-5 w-5 text-gray-600" />
-            </button>
+              <div className="p-2">
+                <ShareButton 
+                  title={product.name}
+                  description={product.description}
+                  url={window.location.href}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -234,10 +222,10 @@ const ProductDetails: React.FC = () => {
           <div className="space-y-4">
             {/* Main Image */}
             <div className="aspect-square bg-white rounded-2xl overflow-hidden shadow-lg">
-              <img
+              <LazyImage
                 src={images[selectedImage]}
                 alt={product.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full"
               />
             </div>
 
@@ -252,10 +240,10 @@ const ProductDetails: React.FC = () => {
                       selectedImage === index ? 'border-pink-500' : 'border-gray-200'
                     }`}
                   >
-                    <img
+                    <LazyImage
                       src={image}
                       alt={`${product.name} ${index + 1}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full"
                     />
                   </button>
                 ))}
@@ -404,6 +392,9 @@ const ProductDetails: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Similar Products */}
+        <SimilarProducts currentProduct={product} />
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { Plus, Star } from 'lucide-react';
 import { Product } from '../types';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '../utils/whatsapp';
+import LazyImage from './LazyImage';
 
 interface ProductCardProps {
   product: Product;
@@ -54,10 +55,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     <div className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden border border-gray-100 relative">
       {/* Image Container */}
       <Link to={`/product/${product.id}`} className="block relative overflow-hidden">
-        <img
+        <LazyImage
           src={product.image_url}
           alt={product.name}
-          className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-64 group-hover:scale-105 transition-transform duration-300"
         />
         
         {/* Category Badge */}
